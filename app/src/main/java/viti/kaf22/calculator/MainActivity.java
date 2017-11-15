@@ -1,16 +1,16 @@
 package viti.kaf22.calculator;
 
-import android.nfc.Tag;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     static final String TAG = "Log";
-
 
     private Button num1Btn;
     private Button num2Btn;
@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button none2Btn;
     private Button none3Btn;
     private TextView txt;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +61,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         resBtn = findViewById(R.id.resBtn);
         none1Btn = findViewById(R.id.none1Btn);
         none2Btn = findViewById(R.id.none2Btn);
-        none3Btn = findViewById(R.id.none3Btn);
+        none3Btn = findViewById(R.id.aboutBtn);
+        pointBtn = findViewById(R.id.pointBtn);
         txt = findViewById(R.id.txt);
+        txt.setMaxLines(1);
+
+        none3Btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager manager = getSupportFragmentManager();
+                HelpDialog dialog = new HelpDialog(new String[] {"About developer", "About application"});
+                dialog.show(manager, "dialog");
+            }
+        });
 
         num0Btn.setOnClickListener(this);
         num1Btn.setOnClickListener(this);
@@ -93,76 +103,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         resBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, (String) txt.getText());
-                String input = (String) txt.getText();
-                String temp = input;
-                long res = 0;
-                long num = 0;
-                while (temp.split("[x,*,/,+,\\-]").length > 1){
-//                if (input.split("[x,*,/,+,\\-]").length > 0){
-//                    int length = input.split("[x,*,/,+,\\-]").length;
-                    Log.d(TAG, String.valueOf(temp.split("[x,*,/,+,\\-]").length));
-                    Log.d(TAG, "RESULT1--------: " + temp);
-//                    for (int i = 0; i < length-1; i++){
-                        Log.d(TAG, "RESULT2: " + input.split("[x,*,/,+,\\-]")[0]);
-                        try {
-                            num=Long.parseLong(input.split("[x,*,/,+,\\-]")[0]);
-                        } catch (Exception e){
-                            num = 0;
-                            txt.setText("");
-                            Log.d(TAG, e.getMessage());
-                        }
-
-                        temp=temp.replaceFirst(temp.split("[x,*,/,+,\\-]")[0], "");
-
-                        switch (temp.toCharArray()[0]){
-                            case 'x':
-                                temp=temp.replaceFirst("x", "");
-                                Log.d(TAG, "RESULT1: " + temp.split("[x,*,/,+,\\-]").length);
-                                if (res == 0) {
-                                    res = num * Long.parseLong(temp.split("[x,*,/,+,\\-]")[0]);
-                                } else {
-                                    res *= Long.parseLong(temp.split("[x,*,/,+,\\-]")[0]);
-                                }
-                                Log.d(TAG, String.valueOf(res));
-                                break;
-                            case '/':
-                                temp=temp.replaceFirst("/", "");
-                                Log.d(TAG, "RESULT1: " + temp.split("[x,*,/,+,\\-]").length);
-                                if (res == 0) {
-                                    res = num / Long.parseLong(temp.split("[x,*,/,+,\\-]")[0]);
-                                } else {
-                                    res /= Long.parseLong(temp.split("[x,*,/,+,\\-]")[0]);
-                                }
-                                Log.d(TAG, String.valueOf(res));
-                                break;
-                            case '+':
-                                temp=temp.replaceFirst("\\+", "");
-                                Log.d(TAG, "RESULT1: " + temp.split("[x,*,/,+,\\-]").length);
-                                if (res == 0) {
-                                    res = num + Long.parseLong(temp.split("[x,*,/,+,\\-]")[0]);
-                                } else {
-                                    res += Float.parseFloat(temp.split("[x,*,/,+,\\-]")[0]);
-                                }
-                                Log.d(TAG, String.valueOf(res));
-                                break;
-                            case '-':
-                                temp=temp.replaceFirst("-", "");
-                                Log.d(TAG, "RESULT1: " + temp.split("[x,*,/,+,\\-]").length);
-                                if (res == 0) {
-                                    res = num - Long.parseLong(temp.split("[x,*,/,+,\\-]")[0]);
-                                } else {
-                                    res -= Long.parseLong(temp.split("[x,*,/,+,\\-]")[0]);
-                                }
-                                Log.d(TAG, String.valueOf(res));
-                                break;
-
-                        }
-//                    }
+                txt.setText(""+CalcOperations.getResult((String) txt.getText()));
                 }
-                txt.setText(String.valueOf(res));
-                Log.d(TAG, (String) txt.getText());
-            }
         });
     }
 
@@ -171,7 +113,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         Button btn = (Button) v;
         Log.d(TAG, (String) txt.getText());
-        txt.setText(((String)txt.getText()) + btn.getText());
+            txt.setText(((String)txt.getText()) + btn.getText());
+            Log.d(TAG, "Text length: " + txt.getText().length());
+
+        if (txt.getText().length() ==  24){
+            Toast.makeText(this, "Maximal(24) count elements on the line", Toast.LENGTH_LONG).show();
+            Log.d(TAG, "Maximal(24) count elements on the line");
+        }
         Log.d(TAG, (String) txt.getText());
     }
+
+
+
+
 }
